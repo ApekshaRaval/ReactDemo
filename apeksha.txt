@@ -1,0 +1,273 @@
+                        ----functional component---
+import React from  'react';
+
+                        ----arrow function---
+const Greet = () => <h1>Hello Appu</h1>
+
+--use of props---
+function Greet (props){
+    return <h1> Hello {props.name}</h1>
+}
+export default Greet;
+
+                        --- destructuring props---
+const Greet = ({name}) => {
+    return (
+        <>
+            <h1>Hello {name}</h1>
+        </>
+    )
+}
+
+const Greet = (props) => {
+    const {name} =props
+    return (
+        <>
+            <h1>Hello {name}</h1>
+        </>
+    )
+}
+
+
+
+
+
+
+
+                        ---- class component------
+import React,{Component} from 'react' ;
+
+class Greet  extends Component{
+    render(){
+        return <h1>Hello  {this.props.name}</h1>
+    }
+
+        -----destructuring of props----
+    render(){
+        const {name} = this.props
+        return(
+            <h1>Hello {name}</h1>
+        )
+
+    }
+}
+export default Greet;
+
+                            ---use of state----
+class Greet1  extends Component{
+    constructor(){
+        super()
+        this.state={
+            count:0
+        }
+    }
+    // setState method use two parameters 1 = object , 2 = callback function
+    increment()
+    {
+                       ---- thi for one increment-----
+        this.setState({
+            count:this.state.count+1
+         },()=>{
+           console.log(this.state.count)
+         })
+
+                         ---this for multiple increment----
+        this.setState((prevState) => ({
+            count :prevState.count +1
+        }))
+        console.log(this.state.count)
+    }
+    incrementMore(){
+        this.increment()
+        this.increment()   
+    }
+    render(){
+        return(
+            <>
+            <div>
+           <h1>count - {this.state.count}</h1>
+           <button onClick={()=>this.incrementMore()}>Increment</button>
+           </div>
+           </>
+        ) 
+    }
+}
+                               ------method as a props------
+parent class:
+
+class Greet1  extends Component{
+constructor(props){
+    super(props)
+    this.state={
+        parentName: "parent"
+    }
+}
+// setState method use two parameters 1 = object , 2 = callback function
+
+greetParent=(childName)=>{
+  alert(`hello ${this.state.parentName } from ${childName}`)
+    
+}
+render(){
+    return(
+        <>
+       <Greet greetHandler={this.greetParent}/>
+    
+      
+       </>
+    ) 
+}
+}
+export default Greet1 ;
+
+child class:
+
+const Greet = (props) => {
+
+       return (
+           <>
+             
+               <button onClick={()=>props.greetHandler('child')}>Greet Parent</button>
+           </>
+       )
+   }
+
+export default  Greet ;
+
+                              ---map method---
+const List = () => {
+   
+    const name1 = [
+        { id:1,firstName:"John", lastName:"Doe", age:55, eyeColor:"blue"}, 
+        {id:2,firstName:"clark", lastName:"sparse", age:30, eyeColor:"black"}
+    ]
+const list = name1.map(name1 => <Greet  key={name1.id} name1={name1}/>)
+in Greet.js we write link this to run upper code    
+const Greet = ({name1}) => {
+       return (
+           <>
+           
+             <h2> {name1.firstName} {name1.lastName} {name1.age} </h2>
+               {/* <button onClick={()=>props.greetHandler('child')}>Greet Parent</button> */}
+           </>
+       )
+   }
+export default  Greet ;
+
+     const list = name1.map(name1 => <h2>{name1.firstName} {name1.lastName} {name1.age}</h2>) 
+     const name = ['apeksha','appu','apexa']
+     const list = name.map((name,index )=> <h2 key={index} >{index}{name}</h2>)
+    
+    return (
+        <>
+            <div>
+                {list}
+            </div>
+        </>
+    )
+}
+
+export default List    
+
+                       ------css module file-----
+style.module.css file can be accessbile  in  imported file only
+<h1 className={styles.error}>error</h1>
+
+                           -----Refs method----
+class Form extends Component {
+    constructor(props) {
+        super(props)
+        this.inputRef = React.createRef()
+        this.cbRef = null
+        this.cbRef = (element)=>{
+            this.cbRef = element
+        }
+        
+    }
+    componentDidMount(){
+        // this.inputRef.current.focus()
+        // console.log(this.inputRef)
+        if(this.cbRef){
+            this.cbRef.focus()
+        }
+    }
+    clickHandler=()=>{
+        alert(this.inputRef.current.value)
+    }
+    render() {
+        return (
+            <form>
+                <div>
+                  <label>Username</label>
+                  {/* <input type="text"  ref={this.inputRef} value={this.state.username}
+                  onChange={this.handleUsername}/> */}
+                 <input type="text"  ref={this.inputRef} />
+                 <input type="text"  ref={this.cbRef} />
+                </div>
+                <button onClick={this.clickHandler}>Submit</button>
+            </form>
+
+        )
+    }
+}
+export default Form
+
+                        -----error boundry----
+import React, { Component } from 'react'
+
+ class ErrorBoundry extends Component {
+    constructor(props){
+        super(props)
+        this.state= {
+            hasError: false
+        }
+    }
+   
+      static getDerivedStateFromError(error)
+    {
+      return{
+    hasError:true
+     }
+    }
+    componentDidCatch(error,info){
+      console.log(error)
+      console.log(info)
+    }
+    
+  render() 
+  {
+    if(this.state.hasError){
+      return <h1>Something went wrong</h1>
+    }
+    return  this.props.children
+  }
+}
+
+export default ErrorBoundry
+
+-----this is the file which gives error--------
+import React from 'react'
+
+const Hero = ({heroName}) => {
+    if(heroName==='joker'){
+        throw new Error('Opps Not a Hero') 
+    }
+  return (
+    <div>
+       {heroName}
+    </div>
+  )
+}
+
+export default Hero
+----is our App.js where we wrape the errored component in errorboundry componenet----
+function App() {
+  return (
+    <div className="App">
+    <ErrorBoundry>
+    < Hero heroName='Batman' />
+    < Hero heroName='joker' />
+    </ErrorBoundry>
+    </div>
+  );
+}
