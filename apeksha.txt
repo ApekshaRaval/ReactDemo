@@ -481,3 +481,470 @@ class PostList extends Component {
 }
 
 export default PostList
+ 
+                        ------lifecycle method------- 
+                        
+import React, { Component } from 'react'
+
+export class LifeCycle extends Component {
+    constructor() {
+      super()
+      this.state={
+        data:null,
+        active:null,
+        who:null
+      }
+    console.log("constructor")
+     
+    }
+    componentDidUpdate(){
+    console.log("componentDidUpdate")
+    //  if(this.setState.who==null)
+    //  {
+    //     this.setState({who:"Apeksha"})
+    //  }   
+    // this.setState({who:"Apeksha"}) //this gives error
+    }
+
+    componentDidMount(){
+        this.setState({data:"updated"})
+        console.log("componentDidMount")
+    }
+  
+  render() 
+  {console.log("render")
+    return (
+      <div>
+        <h1>{this.state.who}</h1>
+        <button onClick={()=>{this.setState({active:"yes"})}}>Activate</button>
+      </div>
+    )
+  }
+}
+
+export default LifeCycle
+
+
+
+                            -------useContext------
+//this is one method using context
+import React from 'react'
+import { UserContext,ChannelContext } from '../App'
+const ComponentF = () => {
+  return (<>
+    <div>
+        <UserContext.Consumer>
+    {
+        name =>{
+            return(
+                <ChannelContext.Consumer>
+                    {
+                     channel =>{
+                        return<div>user context value {name},user Channel value {channel}</div>
+                     }   
+                    }
+                </ChannelContext.Consumer>
+            )
+        }
+    }
+      </UserContext.Consumer>
+    </div>
+    </>
+  )
+}
+
+export default ComponentF
+
+
+//main method code 
+import React from "react"
+import './App.css';
+import ComponentC from './Components/ComponentC';
+
+
+
+
+export const UserContext = React.createContext()
+export const ChannelContext = React.createContext()
+
+function App() {
+  return (
+    <div className="App">
+<UserContext.Provider value={'Apeksha'}>
+  <ChannelContext.Provider value={'myChannel'}>
+  <ComponentC/>
+  </ChannelContext.Provider>
+ 
+  </UserContext.Provider>
+    </div>
+  );
+}
+
+export default App;
+
+//2nd method using useContext hook
+
+import React,{useContext} from 'react'
+import ComponentF from './ComponentF'
+import { UserContext,ChannelContext } from '../App'
+const ComponentE = () => {
+  const user = useContext(UserContext)
+   const channel = useContext(ChannelContext)
+  return (
+    <div>
+      {user} -{channel}
+    </div>
+  )
+}
+
+export default ComponentE
+
+                               ----useState Hook------     
+
+ import React,{useState} from 'react'
+ 
+ const PostForm = () => {
+    const [items,setItems] = useState([])
+    const addItem=()=>{
+        setItems([...items,{
+            id:items.length,
+            value:Math.floor(Math.random()*10)+1
+        }
+     
+        ])
+    }
+   return (
+    <>
+     <div>
+        <button onClick={addItem}>Add a Number</button>
+        <ul>
+       {
+        items.map(item=><li key={item.id}>{item.value}</li>)
+       }
+       </ul>
+     </div>
+     </>
+   )
+ }
+ 
+ export default PostForm
+
+                           ------useEffect-------
+
+import React, { useState, useEffect } from 'react'
+
+const UseEffect = () => {
+    const [count, setCount] = useState(0)
+    const [name, setName] = useState('')
+
+    useEffect(() => {
+        console.log("updated")
+        document.title = `Clicked ${count} times`
+    }, [count])
+
+    return (
+        <div>
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+            <button onClick={() => setCount(count + 1)}>click {count} times</button>
+        </div>
+    )
+}
+
+export default UseEffect
+
+                       -----useReducer-----
+             ----- for local state management----
+
+import React,{useReducer} from 'react'
+
+const initialState=0
+const reducer=(state,action)=>{
+switch(action){
+    case 'increment':
+        return state + 1
+        case 'decrement':
+            return state - 1
+            case 'reset':
+                return initialState
+                default:
+                    return state
+}
+}
+
+const CounterOne = () => {
+    const [count,dispatch] = useReducer(reducer,initialState)
+  return (
+    <div>
+        <div>count - {count}</div>
+      <button onClick={()=>dispatch('increment')}>Increment</button>
+      <button  onClick={()=>dispatch('decrement')}>Decrement</button>
+      <button  onClick={()=>dispatch('reset')}>Reset</button>
+    </div>
+  )
+}
+
+export default CounterOne
+
+
+//state as a object
+import React,{useReducer} from 'react'
+
+const initialState={
+    firstCounter :0,
+    secondCounter:10
+}
+
+ const reducer=(state,action)=>{
+    switch(action.type){
+        case 'increment':
+            return {...state,firstCounter: state.firstCounter + action.value}
+            case 'decrement':
+            return {...state,firstCounter: state.firstCounter - action.value}
+            case 'increment2':
+            return {...state,secondCounter: state.secondCounter + action.value}
+            case 'decrement2':
+            return {...state,firstCounter: state.secondCounter - action.value}
+            case 'reset':
+            return initialState
+            default:
+                return state
+    }
+
+ }
+
+
+const CounterOne = () => {
+
+const[count,dispatch]=useReducer(reducer,initialState)
+  return (
+    <>
+    <div>First count - {count.firstCounter}</div>
+    <div>Second count - {count.secondCounter}</div>
+    <div>
+      <button onClick={()=>dispatch({type:'increment',value:1})}>Increment</button>
+      <button onClick={()=>dispatch({type:'decrement',value:1})}>Decrement</button>
+      <button onClick={()=>dispatch({type:'increment',value:5})}>Increment5</button>
+      <button onClick={()=>dispatch({type:'decrement',value:5})}>Decrement5</button>
+      <button onClick={()=>dispatch({type:'reset'})}>Reset</button>
+    </div>
+    <div>
+              
+      <button onClick={()=>dispatch({type:'increment2',value:1})}>Increment counter2</button>
+      <button onClick={()=>dispatch({type:'decrement2',value:1})}>Decrement counter2</button>
+    </div>
+    </>
+  )
+}
+
+export default CounterOne
+
+//for multiple counter use more than one useReducer
+import React,{useReducer} from 'react'
+
+const initialState=0
+
+
+
+const reducer=(state,action)=>{
+    switch(action.type){
+        case 'increment':
+            return state + action.value
+            case 'decrement':
+                return state - action.value
+                case 'reset':
+                    return initialState
+                    default:
+                        return state
+    }
+
+}
+
+
+const CounterTwo = () => {
+
+    const[count,dispatch] = useReducer(reducer,initialState)
+    const[countTwo,dispatchTwo] = useReducer(reducer,initialState)
+  return (
+    <>
+   <div>First Counter:{count}</div>
+    <div>
+      <button onClick={()=>dispatch({type:'increment',value:1})}>increment</button>
+      <button onClick={()=>dispatch({type:'decrement',value:1})}>decrement</button>
+      <button onClick={()=>dispatch({type:'reset',})}>Reset</button>
+    </div>
+    <div> Second Counter:{countTwo}</div>
+    <div>
+      <button onClick={()=>dispatchTwo({type:'increment',value:1})}>increment</button>
+      <button onClick={()=>dispatchTwo({type:'decrement',value:1})}>decrement</button>
+      <button onClick={()=>dispatchTwo({type:'reset'})}>Reset</button>
+    </div>
+    </>
+  )
+}
+
+export default CounterTwo
+
+                 -----useReducer  + useContext-----
+                  ----- for global state management----
+
+
+import React,{useReducer} from "react"
+import './App.css';
+import ComponentA from "./Components/ComponentA";
+import ComponentB from "./Components/ComponentB";
+import ComponentC from "./Components/ComponentC";
+
+export const CountContext = React.createContext()
+
+
+const initialState=0
+const reducer=(state,action)=>{
+    switch(action){
+        case 'increment':
+            return state +1
+            case 'decrement':
+                return state -1
+                case 'reset':
+                    return initialState
+                    default:
+                        return state
+    }
+
+}
+
+
+function App() {
+  const[count,dispatch]=useReducer(reducer,initialState)
+  return (
+    <CountContext.Provider value={{countState:count ,countDispatch:dispatch}}>
+    <div className="App">
+ 
+  <ComponentA/>
+  <ComponentB/>
+  <ComponentC/>
+    </div>
+    </CountContext.Provider>
+  );
+}
+
+export default App;
+
+
+
+import React,{useContext} from 'react'
+import {CountContext} from '../App'
+
+const ComponentA = () => {
+/* Getting the value from the context. */
+  const countContext = useContext(CountContext)
+
+  return (
+    <div>
+      counter A - {countContext.countState}
+      
+      <button onClick={()=>countContext.countDispatch('increment')}>increment</button>
+      <button onClick={()=>countContext.countDispatch('decrement')}>decrement</button>
+      <button onClick={()=>countContext.countDispatch('reset')}>Reset</button>
+    </div>
+  )
+}
+
+export default ComponentA
+
+
+                             --------useRef-----------
+
+import React from 'react'
+
+const userRef=React.createRef();
+
+const UseRefDemo = () => {
+const focusinput =()=>{
+    userRef.current.value="Apeksha"
+}
+  return (
+    <div>
+      <input ref={userRef} type="text" name="user"/>
+      <button onClick={focusinput}>Focus</button>
+    </div>
+  )
+}
+
+export default UseRefDemo
+
+
+import React,{useEffect,useRef} from 'react'
+
+const UseRefDemo = () => {
+    const inputRef = useRef(null)
+    useEffect(()=>{
+   inputRef.current.focus()
+    },[])
+  return (
+    <div>
+      <input ref={inputRef} type="text" name="user"/>
+{/*       <button onClick={focusinput}>Focus</button> */}
+    </div>
+  )
+}
+
+export default UseRefDemo
+
+
+import React, { useEffect, useRef, useState } from 'react'
+
+const UseRefDemo = () => {
+    const [timer, setTimer] = useState(0)
+    const intervalRef = useRef()
+    useEffect(() => {
+    intervalRef.current=setInterval(()=>{
+    setTimer(prevTimer =>prevTimer+1)
+  },1000)
+  return()=>{
+  clearInterval(intervalRef.current)
+  }
+    },[])
+    return (
+        <div>
+              Timer :  {timer}
+              <button onClick={()=>clearInterval(intervalRef.current)}>Clear Timer</button>
+        </div>
+    )
+}
+
+export default UseRefDemo
+
+                   --------------useMemo---------------
+
+import React ,{useState,useMemo}from 'react'
+
+const UseMemoDemo = () => {
+    const[counterOne,setCounterOne]=useState(0)
+    const[counterTwo,setCounterTwo]=useState(0)
+    const incrementOne = ()=>{
+        setCounterOne(counterOne+1)
+    }
+    const incrementTwo = ()=>{
+        setCounterTwo(counterTwo+1)
+    }
+    const isEven = useMemo(() =>{
+    //    let i=0
+    //    while(i<2000000000)i++
+        return counterOne % 2 ===0
+    },[counterOne])
+  return (
+  <>
+    <div>
+      <button onClick={incrementOne}>Count One - {counterOne}</button>
+      <span>{isEven?'Even':'Odd'}</span>
+    </div>
+    <div>
+      <button onClick={incrementTwo}>Count One - {counterTwo}</button>
+     
+    </div>
+    </>
+  )
+}
+
+export default UseMemoDemo
+                   

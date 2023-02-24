@@ -1,24 +1,15 @@
-import React from "react"
+import React from 'react'
 import './App.css';
-import ComponentC from './Components/ComponentC';
+import UseForm from './Components/UseCustomHook/UseForm';
 
 
-
-
-export const UserContext = React.createContext()
-export const ChannelContext = React.createContext()
-
-function App() {
+const App = () => {
   return (
-    <div className="App">
-<UserContext.Provider value={'Apeksha'}>
-  <ChannelContext value={'myChannel'}>
-  <ComponentC/>
-  </ChannelContext>
- 
-  </UserContext.Provider>
+    <div className='App'>
+    <UseForm/>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
+
